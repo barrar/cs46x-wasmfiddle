@@ -1,0 +1,169 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>WASM Fiddle</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="WASMFiddle_logo_v1_sm.png">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="vs/editor/editor.main.css">
+</head>
+
+<body>
+    <div id="container">
+        <header>
+            <a id="logo" title="WASMFiddle" href="/"><img src="WASMFiddle_logo_v1_sm.png" height=100%></a>
+            <nav class="navbar">
+                <a href="#" id="buttonRun">Run</a>
+                <a href="#">Save</a>
+                <a href="#">Share</a>
+                <a href="#">Docs</a></nav>
+        </header>
+        <main>
+            <div id="content">
+                <div class="panel left-panel">
+                    <div class="panel-label">
+                        <span>WebAssembly
+                            <span class="panel-menu">
+                                Language:
+                                <button>C</button>
+                                <button>C++</button>
+                                <button>Rust</button>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="monacoEditor" id="WebAssemblyEditor"></div>
+                </div>
+                <div class="panel right-panel">
+                    <div class="panel-label">
+                        <span>Output</span>
+                    </div>
+                    <div id="Output"></div>
+                </div>
+                <div class="panel left-panel">
+                    <div class="panel-label">
+                        <span>JavaScript</span>
+                    </div>
+                    <div class="monacoEditor" id="JavaScriptEditor"></div>
+                </div>
+                <div class="panel right-panel">
+                    <div class="panel-label">
+                        <span>HTML</span>
+                    </div>
+                    <div class="monacoEditor" id="HTMLEditor"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+<script>
+    var require = { paths: { vs: 'vs' } };
+</script>
+
+<script src="vs/loader.js"></script>
+<script src="vs/editor/editor.main.nls.js"></script>
+<script src="vs/editor/editor.main.js"></script>
+
+<script>
+    var webassemblyEditor = monaco.editor.create(document.getElementById('WebAssemblyEditor'), {
+        minimap: {
+            enabled: false
+        },
+        wordWrap: 'on',
+        lineNumbers: 'off',
+        folding: false,
+        lineDecorationsWidth: 5,
+        theme: 'vs-dark',
+        automaticLayout: true,
+        value: [
+            '// Copyright 2011 Emscripten',
+            '',
+            '#include <stdio.h>',
+            '',
+            'int main() {',
+            '    printf("hello, world!\\n");',
+            '    return 0;',
+            '}'
+        ].join('\n'),
+        language: 'c'
+    });
+
+    var javascriptEditor = monaco.editor.create(document.getElementById('JavaScriptEditor'), {
+        minimap: {
+            enabled: false
+        },
+        wordWrap: 'on',
+        lineNumbers: 'off',
+        folding: false,
+        lineDecorationsWidth: 5,
+        theme: 'vs-dark',
+        automaticLayout: true,
+        value: [
+            'var editor = monaco.editor.create(document.getElementById(\'test\'), {',
+            '    minimap: {',
+            '        enabled: false',
+            '    },',
+            '    theme: \'vs-dark\',',
+            '    automaticLayout: true,',
+            '    value: [',
+            '    \'var editor = monaco.editor.create(document.getElementById(\\\'JavaScriptEditor\\\'), {\',',
+            '    \'    minimap: {\',',
+            '    \'        enabled: false\',',
+            '    \'    },\',',
+            '    \'    theme: \\\'vs-dark\\\',\',',
+            '    \'    automaticLayout: true,\'',
+            '    ].join(\'\\n\'),',
+            '    language: \'javascript\'',
+            '    });'
+        ].join('\n'),
+        language: 'javascript'
+    });
+
+    var htmlEditor = monaco.editor.create(document.getElementById('HTMLEditor'), {
+        minimap: {
+            enabled: false
+        },
+        wordWrap: 'on',
+        lineNumbers: 'off',
+        folding: false,
+        lineDecorationsWidth: 5,
+        theme: 'vs-dark',
+        automaticLayout: true,
+        value: [
+            '<div id="test">',
+            '<p class="testing" id="main">Test content.</p>',
+            '</div>'
+        ].join('\n'),
+        language: 'html'
+    });
+</script>
+<script>
+    window.onload = function() {
+        var buttonRun = document.getElementById("buttonRun");
+        buttonRun.onclick = function() {
+            //get source code from editor and encode it with JSON.stringify
+            webassemblyEditorValue = JSON.stringify({
+                webassemblyEditorValue: webassemblyEditor.getValue()
+            });
+        
+            console.log(webassemblyEditorValue);
+
+            fetch("/compilerC/receiver", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: webassemblyEditorValue,
+            })
+            .then(response => response.json())
+            .then(data => {
+                setTimeout(function(){ location.href = data.link; }, 10000);
+                window.alert("Please wait 10 seconds until the code compiles and page loads... (this is a placeholder)")
+            })
+            // here we can just redirect to the link of the compiled module for now...
+            return false;
+        }
+    }
+</script>
+</html>
