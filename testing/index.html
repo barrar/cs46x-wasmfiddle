@@ -146,7 +146,12 @@
                 webassemblyEditorValue: webassemblyEditor.getValue()
             });
         
+            javascriptEditorValue = JSON.stringify({
+                javascriptEditorValue: javascriptEditor.getValue()
+            });
+
             console.log(webassemblyEditorValue);
+			console.log(javascriptEditorValue);
 
             fetch("/compilerC/receiver", {
                 method: "POST",
