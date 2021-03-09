@@ -142,11 +142,13 @@
         var buttonRun = document.getElementById("buttonRun");
         buttonRun.onclick = function() {
             //get source code from editor and encode it with JSON.stringify
-            webassemblyEditorValue = JSON.stringify({
-                webassemblyEditorValue: webassemblyEditor.getValue()
+            let values = JSON.stringify({
+                webassemblyEditorValue: webassemblyEditor.getValue(),
+                javascriptEditorValue: javascriptEditor.getValue(),
+                htmlEditorValue: htmlEditor.getValue()
             });
         
-            console.log(webassemblyEditorValue);
+            console.log(values);
 
             fetch("/compilerC/receiver", {
                 method: "POST",
@@ -154,7 +156,7 @@
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-                body: webassemblyEditorValue,
+                body: values,
             })
             .then(response => response.json())
             .then(data => {
