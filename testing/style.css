@@ -106,3 +106,27 @@ header {
 	width: 100%;
 	height: calc(100% - 31px);
 }
+
+#iframeOutput{
+	width: 100%;
+    height: calc(100% - 31px);
+    border: none;
+}
+
+#spinner{
+    height: 100px;
+    width: 100px;
+    margin: 0px auto;
+    animation: rotation 1.5s linear infinite;
+    border-left: 20px solid rgb(0 0 0);
+    border-right: 20px solid rgb(0 0 0);
+    border-bottom: 20px solid rgb(243 125 0);
+    border-top: 20px solid rgb(243 125 0);
+    border-radius: 100%;
+    background-color: #000000;
+}
+
+@keyframes rotation {
+	from {transform: rotate(0deg);}
+	to {transform: rotate(360deg);}
+  }

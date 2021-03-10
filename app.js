@@ -116,4 +116,6 @@ for (var i in routes) app.use('/', routes[i]);
 
 // To listen on port 80, run as root
 // The live server currently uses nginx to proxy requests
-app.listen(8002, function() {});
+server = app.listen(8002, function() {});
+
+server.timeout = 240000;
