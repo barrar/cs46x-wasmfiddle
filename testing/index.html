@@ -76,11 +76,29 @@
         theme: 'vs-dark',
         automaticLayout: true,
         value: [
-            '// Copyright 2011 Emscripten',
+            '// Code adapted from https://stackoverflow.com/a/50832655',
             '',
             '#include <stdio.h>',
+            '#include <emscripten.h>',
+            '',
+            'void Copy_ToCanvas(uint32_t* ptr, int w, int h) {',
+            '  EM_ASM_({',
+            '      let data = Module.HEAPU8.slice($0, $0 + $1 * $2 * 4);',
+            '      let context = Module[\'canvas\'].getContext(\'2d\');',
+            '      let imageData = context.getImageData(0, 0, $1, $2);',
+            '      imageData.data.set(data);',
+            '      context.putImageData(imageData, 0, 0);',
+            '    }, ptr, w, h);',
+            '}',
             '',
             'int main() {',
+            '    int screen[320*320],idx=0;',
+            '    for (int x=0; x<320*320; x++)',
+            '        screen[idx++] = 0xff000000;',
+            '    for (int x=0; x<320; x++)',
+            '        for (int y=0; y<320; y++)',
+            '            screen[320*(x|y) + (x&y)]= 0xffffffff;',
+            '    Copy_ToCanvas(screen, 320, 320);',
             '    printf("hello, world!\\n");',
             '    return 0;',
             '}'
@@ -160,8 +178,16 @@
             })
             .then(response => response.json())
             .then(data => {
-                setTimeout(function(){ location.href = data.link; }, 10000);
-                window.alert("Please wait 10 seconds until the code compiles and page loads... (this is a placeholder)")
+                setTimeout(function(){
+                    var iframeOutput = document.createElement('iframe');
+                    iframeOutput.setAttribute('id', 'iframeOutput');
+                    var divOutput = document.getElementById('Output');
+                    divOutput.innerHTML = "";
+                    divOutput.appendChild(iframeOutput);
+                    iframeOutput.setAttribute('src', data.link);
+                }, 5000);
+                var divOutput = document.getElementById('Output');
+                divOutput.innerHTML = 'Please wait 5 seconds for the code to compile<br><div id="spinner">';
             })
             // here we can just redirect to the link of the compiled module for now...
             return false;
