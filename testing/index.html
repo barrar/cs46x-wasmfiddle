@@ -16,7 +16,8 @@
                 <a href="#" id="buttonRun">Run</a>
                 <a href="#">Save</a>
                 <a href="#">Share</a>
-                <a href="#">Docs</a></nav>
+                <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/C_to_wasm">Learn WASM</a>
+            </nav>
         </header>
         <main>
             <div id="content">
@@ -25,9 +26,9 @@
                         <span>WebAssembly
                             <span class="panel-menu">
                                 Language:
-                                <button>C</button>
-                                <button>C++</button>
-                                <button>Rust</button>
+                                <button id="langC">C</button>
+                                <button id="langCpp">C++</button>
+                                <button id="langRust">Rust</button>
                             </span>
                         </span>
                     </div>
@@ -157,6 +158,13 @@
 </script>
 <script>
     window.onload = function() {
+
+		var inputLang = "c";
+
+		document.getElementById("langC").onclick = function() {inputlang = "c"};
+		document.getElementById("langCpp").onclick = function() {inputlang = "cpp"};
+		document.getElementById("langRust").onclick = function() {inputLang = "rust"};
+
         var buttonRun = document.getElementById("buttonRun");
         buttonRun.onclick = function() {
             //get source code from editor and encode it with JSON.stringify
