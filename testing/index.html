@@ -1,5 +1,4 @@
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<title>WASM Fiddle</title>
@@ -25,9 +24,12 @@
                         <span>WebAssembly
                             <span class="panel-menu">
                                 Language:
-                                <button>C</button>
-                                <button>C++</button>
-                                <button>Rust</button>
+                                <input type="radio" id="radioC" name="programmingLanguage" class="programmingLanguageRadio" value="c" checked="checked">
+                                <label class="programmingLanguageLabel" for="radioC">C</label>
+                                <input type="radio" id="radioCpp" name="programmingLanguage" class="programmingLanguageRadio" value="cpp">
+                                <label class="programmingLanguageLabel" for="radioCpp">C++</label>
+                                <input type="radio" id="radioRust" name="programmingLanguage" class="programmingLanguageRadio" value="rust"> 
+                                <label class="programmingLanguageLabel" for="radioRust">Rust</label>
                             </span>
                         </span>
                     </div>
@@ -157,10 +159,18 @@
 </script>
 <script>
     window.onload = function() {
+        window.programmingLanguage = "c"
+        document.querySelectorAll('.programmingLanguageRadio').forEach(button => {
+            button.addEventListener('click', () => {
+                window.programmingLanguage = button.value;
+            });
+        });
+
         var buttonRun = document.getElementById("buttonRun");
         buttonRun.onclick = function() {
             //get source code from editor and encode it with JSON.stringify
             let values = JSON.stringify({
+                programmingLanguage: window.programmingLanguage,
                 webassemblyEditorValue: webassemblyEditor.getValue(),
                 javascriptEditorValue: javascriptEditor.getValue(),
                 htmlEditorValue: htmlEditor.getValue()

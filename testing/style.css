@@ -107,16 +107,22 @@ header {
 	height: calc(100% - 31px);
 }
 
+#Output{
+	text-align: center;
+}
+
 #iframeOutput{
-	width: 100%;
+	width: 40%;
+	margin:auto;
     height: calc(100% - 31px);
     border: none;
+	display: block;
 }
 
 #spinner{
     height: 100px;
     width: 100px;
-    margin: 0px auto;
+    margin: 50px auto;
     animation: rotation 1.5s linear infinite;
     border-left: 20px solid rgb(0 0 0);
     border-right: 20px solid rgb(0 0 0);
@@ -130,3 +136,22 @@ header {
 	from {transform: rotate(0deg);}
 	to {transform: rotate(360deg);}
   }
+
+.programmingLanguageRadio{
+    display: none;
+}
+
+.programmingLanguageLabel{
+	border: 1px solid #fff;
+    border-radius: 5px;
+    padding: 0 10px;
+}
+
+.programmingLanguageRadio:checked + label{
+	background: #ffffff;
+    color: #000;
+}
+
+.programmingLanguageLabel:hover{
+	cursor: pointer;
+}
