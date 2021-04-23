@@ -4,34 +4,44 @@ html
         title
             block title
         link(rel='icon', type='image/png', href='/media/logo.png')
-        link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto&display=swap')
-        link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css')
         link(rel='stylesheet', href='/css/style.css?v=2')
+        <link rel="icon" href="logo.png">
+        <link rel="stylesheet" data-name="vs/editor/editor.main" href="vs/editor/editor.main.css">
     body
-    div(class='container')
-        a(class="imgLink" href="/"): img(id='logo' src='/media/logo.png')
-        ul(class='nav')
-            li
-                a(href="/project") New Project
-            //- li
-            //-     a(href="/") Language
-            li
-                span(class="dropdown") Language...
-                ul
-                    li
-                        a(href="/") C
-                    li
-                        a(href="/") C++
-                    li
-                        a(href="/") Rust
-            li
-                if sessionUserID == -1
-                    a(href="/createAccount") Create account
-                else
-                    a(href="/myAccount") My Account
-            li
-                if sessionUserID == -1
-                    a(href="/signIn") Sign In
-                else
-                    a(href="/signIn/signOut") Sign Out
-        block content
+    //- div(class='container')
+    //-     a(class="imgLink" href="/"): img(id='logo' src='/media/logo.png')
+    //-     ul(class='nav')
+    //-         li
+    //-             a(href="/project") New Project
+    //-         //- li
+    //-         //-     a(href="/") Language
+    //-         li
+    //-             span(class="dropdown") Language...
+    //-             ul
+    //-                 li
+    //-                     a(href="/") C
+    //-                 li
+    //-                     a(href="/") C++
+    //-                 li
+    //-                     a(href="/") Rust
+    //-         li
+    //-             if sessionUserID == -1
+    //-                 a(href="/createAccount") Create account
+    //-             else
+    //-                 a(href="/myAccount") My Account
+    //-         li
+    //-             if sessionUserID == -1
+    //-                 a(href="/signIn") Sign In
+    //-             else
+    //-                 a(href="/signIn/signOut") Sign Out
+    div(id="container")
+        <header>
+            <a id="logo" title="WASMFiddle" href="/"><img src="media/WASMFiddle_logo_v1_sm.png" height=100%></a>
+            <nav class="navbar">
+                <a href="#" id="buttonRun">Run</a>
+                <a href="#">Save</a>
+                <a href="#">Share</a>
+                <a href="#">Docs</a></nav>
+        </header>
+        main
+            block content

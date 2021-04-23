@@ -80,6 +80,7 @@ app.locals.basedir = '/var/www/wasmfiddle';
 app.use('/css', express.static('css'));
 app.use('/js', express.static('js'));
 app.use('/media', express.static('media'));
+app.use('/vs', express.static('vs'));
 
 // This will auto reload the browser when code changes
 // All relevant files are watched for changes

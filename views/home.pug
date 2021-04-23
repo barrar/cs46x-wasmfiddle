@@ -1,36 +1,163 @@
-extends master.pug
-block title
-    | WASM Fiddle
-block content
-    h1 Welcome to WASM Fiddle
-    if sessionName
-        h4(style='color:red') Logged in as: #{sessionName} (#{sessionEmail})
-    h4 Here are some of the features this website has to offer:
-    ul(class='largeList')
-        li Layout for new projects
-        li Log in and see your projects (login works)
-        li Create and compile Web Assembly Modules (in progress)
-    h4 Supporting technologies
-    ul(class='largeList')
-        li Ubuntu 20.04 VM on Google Cloud as Operating System
-        li MySQL 8.0.19 as database for all data and session storage
-        li Node 12.18.4 LTS as main app engine
-        li pm2 4.4.1 as node process manager
-        li Nginx as proxy
-        ul.listLevel2
-            li http2 for performance
-            li Let's Encrypt for TLS encryption
-            li Serves static content directly from file system
-    h4 Node packages
-    ul(class='largeList')
-        li browser-sync 2.26.7
-        li connect-browser-sync 2.1.0
-        li express 4.17.1
-        li express-mysql-session 2.1.3
-        li express-recaptcha 5.0.1
-        li express-session 1.17.0
-        li moment 2.24.0
-        li mysql 2.18.1
-        li pug 2.0.4
-        li require-dir 1.2.0
-        li socket.io 2.3.0
+head
+  meta(charset='utf-8')
+  title WASM Fiddle
+  link(rel='stylesheet' href='css/style.css')
+  link(rel='icon' href='media/logo.png')
+  link(rel='stylesheet' data-name='/vs/editor/editor.main' href='/vs/editor/editor.main.css')
+#container
+  header
+    a#logo(title='WASMFiddle' href='/')
+      img(src='media/logo.png' height='100%')
+    nav.navbar
+      a#buttonRun(href='#') Run
+      a(href='#') Save
+      a(href='#') Share
+      a(href='#') Docs
+  main
+    #content
+      .panel.left-panel
+        .panel-label
+          span
+            | WebAssembly
+            span.panel-menu
+              | Language:
+              input#radioC.programmingLanguageRadio(type='radio' name='programmingLanguage' value='c' checked='checked')
+              label.programmingLanguageLabel(for='radioC') C
+              input#radioCpp.programmingLanguageRadio(type='radio' name='programmingLanguage' value='cpp')
+              label.programmingLanguageLabel(for='radioCpp') C++
+              input#radioRust.programmingLanguageRadio(type='radio' name='programmingLanguage' value='rust')
+              label.programmingLanguageLabel(for='radioRust') Rust
+        #WebAssemblyEditor.monacoEditor
+      .panel.right-panel
+        .panel-label
+          span Output
+        #Output
+      .panel.left-panel
+        .panel-label
+          span JavaScript
+        #JavaScriptEditor.monacoEditor
+      .panel.right-panel
+        .panel-label
+          span HTML
+        #HTMLEditor.monacoEditor
+script.
+  var require = { paths: { vs: 'vs' } };
+script(src='/vs/loader.js')
+script(src='/vs/editor/editor.main.nls.js')
+script(src='/vs/editor/editor.main.js')
+script.
+  window.onload = function() {
+    var webassemblyEditor = monaco.editor.create(document.getElementById('WebAssemblyEditor'), {
+    minimap: {
+    enabled: false
+    },
+    wordWrap: 'on',
+    lineNumbers: 'off',
+    folding: false,
+    lineDecorationsWidth: 5,
+    theme: 'vs-dark',
+    automaticLayout: true,
+    value: [
+    '// Code adapted from https://stackoverflow.com/a/50832655',
+    '',
+    '#include <stdio.h>',
+    '#include <emscripten.h>',
+    '',
+    'void Copy_ToCanvas(uint32_t* ptr, int w, int h) {',
+    '  EM_ASM_({',
+    '      let data = Module.HEAPU8.slice($0, $0 + $1 * $2 * 4);',
+    '      let context = Module[\'canvas\'].getContext(\'2d\');',
+    '      let imageData = context.getImageData(0, 0, $1, $2);',
+    '      imageData.data.set(data);',
+    '      context.putImageData(imageData, 0, 0);',
+    '    }, ptr, w, h);',
+    '}',
+    '',
+    'int main() {',
+    '    int screen[320*320],idx=0;',
+    '    for (int x=0; x<320*320; x++)',
+    '        screen[idx++] = 0xff000000;',
+    '    for (int x=0; x<320; x++)',
+    '        for (int y=0; y<320; y++)',
+    '            screen[320*(x|y) + (x&y)]= 0xffffffff;',
+    '    Copy_ToCanvas(screen, 320, 320);',
+    '    printf("hello, world!\\n");',
+    '    return 0;',
+    '}'
+    ].join('\n'),
+    language: 'c'
+    });
+    var javascriptEditor = monaco.editor.create(document.getElementById('JavaScriptEditor'), {
+    minimap: {
+    enabled: false
+    },
+    wordWrap: 'on',
+    lineNumbers: 'off',
+    folding: false,
+    lineDecorationsWidth: 5,
+    theme: 'vs-dark',
+    automaticLayout: true,
+    value: [
+    'console.log("test")'
+    ].join('\n'),
+    language: 'javascript'
+    });
+    var htmlEditor = monaco.editor.create(document.getElementById('HTMLEditor'), {
+    minimap: {
+    enabled: false
+    },
+    wordWrap: 'on',
+    lineNumbers: 'off',
+    folding: false,
+    lineDecorationsWidth: 5,
+    theme: 'vs-dark',
+    automaticLayout: true,
+    value: [
+    '<div id="test">',
+    '<p class="testing" id="main">Test content.</p>',
+    '</div>'
+    ].join('\n'),
+    language: 'html'
+    });
+
+  window.programmingLanguage = "c"
+  document.querySelectorAll('.programmingLanguageRadio').forEach(button => {
+  button.addEventListener('click', () => {
+  window.programmingLanguage = button.value;
+  });
+  });
+  var buttonRun = document.getElementById("buttonRun");
+  buttonRun.onclick = function() {
+  //get source code from editor and encode it with JSON.stringify
+  let values = JSON.stringify({
+  programmingLanguage: window.programmingLanguage,
+  webassemblyEditorValue: webassemblyEditor.getValue(),
+  javascriptEditorValue: javascriptEditor.getValue(),
+  htmlEditorValue: htmlEditor.getValue()
+  });
+  console.log(values);
+  fetch("/compilerC/receiver", {
+  method: "POST",
+  headers: {
+  "Content-Type": "application/json",
+  "Accept": "application/json"
+  },
+  body: values,
+  })
+  .then(response => response.json())
+  .then(data => {
+  setTimeout(function(){
+  var iframeOutput = document.createElement('iframe');
+  iframeOutput.setAttribute('id', 'iframeOutput');
+  var divOutput = document.getElementById('Output');
+  divOutput.innerHTML = "";
+  divOutput.appendChild(iframeOutput);
+  iframeOutput.setAttribute('src', data.link);
+  }, 5000);
+  var divOutput = document.getElementById('Output');
+  divOutput.innerHTML = 'Please wait 5 seconds for the code to compile<br><div id="spinner">';
+  })
+  // here we can just redirect to the link of the compiled module for now...
+  return false;
+  }
+  }
